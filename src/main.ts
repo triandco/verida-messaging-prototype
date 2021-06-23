@@ -1,6 +1,6 @@
 import './global.css';
 
-import App from './FileSendingApp.svelte';
+import App from './DatabasePermissionApp.svelte';
 
 const app = new App({
 	target: document.body,

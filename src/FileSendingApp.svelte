@@ -17,7 +17,7 @@
     });
 
     app = new Verida({
-      chain: "near",
+      chain: provider,
       address: address,
       web3Provider: web3Provider,
     });

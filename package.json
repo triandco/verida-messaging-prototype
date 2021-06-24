@@ -24,7 +24,7 @@
     "validate": "svelte-check"
   },
   "dependencies": {
-    "@verida/datastore": "^0.7.0",
+    "@verida/datastore": "^0.7.3",
     "node-polyfill-webpack-plugin": "^1.1.3"
   }
 }

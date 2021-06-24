@@ -33,7 +33,7 @@ async function connectToApp(){
 }
 
 async function createDatabase(){
-  db = await app.openDatabase(dbName, app.user.did, {
+  db = await app.openDatabase(dbName, {
     permissions: permissions
   });
 }

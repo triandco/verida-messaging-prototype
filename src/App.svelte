@@ -10,7 +10,7 @@
 <main class="flex flex-col h-screen justify-center bg-right-bottom bg-no-repeat md:" style="background-image:url(images/background-decoration.jpg);">
   <div class="sm:w-full m-w-md md:w-1/3  text-center backdrop-blur-xl backdrop-filter bg-white bg-opacity-50 p-8 flex-1 flex justify-center flex-col">
     <header class="my-8">
-      <h1 class="text-5xl font-serif">DEX</h1>
+      <h1 class="text-5xl font-serif">Desca</h1>
       <p class="text-xl">for legal professionals</p>
     </header>
     {#if did !== undefined && did !== null}

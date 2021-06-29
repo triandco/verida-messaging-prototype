@@ -1,3 +1,19 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.button{
+  @apply bg-black bg-opacity-5 py-2 px-4 uppercase font-semibold;
+}
+
+.button.primary{
+  @apply bg-green-600 hover:bg-green-400 text-white font-bold py-2 px-4 rounded max-w-max text-lg mx-auto;
+}
+
+.button.icon{
+  @apply bg-transparent active:bg-black active:bg-opacity-5;
+}
+
+.bg-glass{
+  @apply backdrop-blur-xl backdrop-filter bg-green-50 bg-opacity-90;
+}

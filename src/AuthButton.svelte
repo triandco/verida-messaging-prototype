@@ -1,13 +1,11 @@
-<script lang="ts" context="module">
-  export type UserAuthenticated = { did: string };
-  export type AuthProvider = "ethr" | "near";
-  export type UserAuthenticatedEvent = { "UserAuthenticated": UserAuthenticated};
-</script>
-
 <script type="ts">
   import Verida from "@verida/datastore";
   import {isMetaMaskAvailable, getMetamaskExtensionLink} from "./WalletSupport";
   import { createEventDispatcher } from "svelte";
+  import type { UserAuthenticated } from "./Type";
+  
+  type AuthProvider = "ethr" | "near";
+  type UserAuthenticatedEvent = { "UserAuthenticated": UserAuthenticated };
 
   export let provider:AuthProvider = "ethr";
   export let applicationName: string;
@@ -30,7 +28,7 @@
     });
 
 		await app.connect(true);
-    dispatch("UserAuthenticated", {did: app.user.did});
+    dispatch("UserAuthenticated", {did: app.user.did, type:"UserAuthenticated"});
   }
   const clicked = () => connect().catch(e => {
     if(e.message=="Unable to locate Ethereum"){
@@ -42,13 +40,13 @@
 
 {#if canLogin}
 <button
-  class="bg-green-600 hover:bg-green-400 text-white font-bold py-2 px-4 rounded max-w-max text-lg mx-auto"
+  class="button primary"
   disabled={isInvalidApplicationName}
   on:click={clicked}>Enter</button>
 {:else}
 <div>
   <p class="text-lg">Metamask is required to login</p>
-  <a class="inline-flex items-center bg-green-600 hover:bg-blue-400 text-white font-bold py-2 px-4 rounded max-w-max my-2 text-lg" href={getMetamaskExtensionLink()}>
+  <a class="inline-flex button primary" href={getMetamaskExtensionLink()}>
     Get <img src="images/metamask.webp" alt="metamask" class="w-4 h-4 mx-2 inline-block"/>  Metamask
   </a>
   <br/>

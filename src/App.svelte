@@ -1,24 +1,55 @@
 <script lang="ts">
-  import AuthButton, { UserAuthenticated } from "./AuthButton.svelte";
+  import { wrap } from "svelte-spa-router/wrap";
+  import NotFound from "./NotFound.svelte";
+  import Auth from "./Auth.svelte";
+  import Dashboard from "./MatterDashboard.svelte";
+  import Router, { push, replace } from "svelte-spa-router";
+  import type { AppRouteEvent } from "./Type";
+  import { incompleteMatchCase } from "./Common";
+  import { getApplicationData, saveApplicationData, setApplicationVersion } from "./SimplePersistence";
+
   export let applicationName: string;
   export let version: string;
+  setApplicationVersion(version);
+  let did: string = getApplicationData("Did");
+  
+  const routes = {
+    "/": wrap({
+      component: Dashboard,
+      props: {
+        did: did,
+      },
+      conditions: [(_) => did !== null && did !== undefined],
+    }),
+    "/auth": wrap({
+      component: Auth,
+      props: {
+        applicationName: applicationName,
+        version: version,
+      },
+    }),
+    "*": NotFound,
+  };
 
-  let did: string;
-  const userAuthenticated = (e: UserAuthenticated) => did = e.did;
+  function routeEvent(e: AppRouteEvent) {
+    switch (e.type) {
+      case "UserAuthenticated":
+        did = e.did;
+        saveApplicationData("Did", did);
+        push("/");
+        break;
+      default:
+        incompleteMatchCase(e.type, "Incomplete match case:AppRouteEvent");
+    }
+  }
+
+  function conditionsFailed(e:any){
+    replace("/auth");
+  }
 </script>
 
-<main class="flex flex-col h-screen justify-center bg-right-bottom bg-no-repeat md:" style="background-image:url(images/background-decoration.jpg);">
-  <div class="sm:w-full m-w-md md:w-1/3  text-center backdrop-blur-xl backdrop-filter bg-white bg-opacity-50 p-8 flex-1 flex justify-center flex-col">
-    <header class="my-8">
-      <h1 class="text-5xl font-serif">Desca</h1>
-      <p class="text-xl">for legal professionals</p>
-    </header>
-    {#if did !== undefined && did !== null}
-    Welcome {did}
-    {:else}
-      <AuthButton applicationName={applicationName} on:UserAuthenticated={x => userAuthenticated(x.detail)} />
-    {/if}
-    <footer class="my-8 border-t pt-2">DEX {version} &copy; OnPoint Compliance { new Date().getFullYear()}</footer>
-  </div>
-</main>
-
+<Router
+  {routes}
+  on:routeEvent={(e) => routeEvent(e.detail)}
+  on:conditionsFailed={x => conditionsFailed(x.detail)}
+/>

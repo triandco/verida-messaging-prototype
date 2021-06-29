@@ -2,6 +2,7 @@ import { incompleteMatchCase } from "./Common";
 
 export type UserAuthenticated = { did: string, type: "UserAuthenticated" };
 export type MatterCreated = { matter: Matter, type: "MatterCreated"};
+export type MatterDeleted = { matter: Matter, type: "MatterDeleted"};
 
 export type AppRouteEvent = UserAuthenticated;
 

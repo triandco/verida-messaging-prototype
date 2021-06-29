@@ -15,5 +15,5 @@
 }
 
 .bg-glass{
-  @apply backdrop-blur-xl backdrop-filter bg-green-50 bg-opacity-90;
+  @apply backdrop-blur-xl backdrop-filter bg-white bg-opacity-90;
 }

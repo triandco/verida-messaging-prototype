@@ -7,6 +7,7 @@
   import type { AppRouteEvent } from "./Type";
   import { incompleteMatchCase } from "./Common";
   import { getApplicationData, saveApplicationData, setApplicationVersion } from "./SimplePersistence";
+  import MatterCreation from "./MatterCreation.svelte";
 
   export let applicationName: string;
   export let version: string;
@@ -21,6 +22,7 @@
       },
       conditions: [(_) => did !== null && did !== undefined],
     }),
+    
     "/auth": wrap({
       component: Auth,
       props: {
@@ -39,7 +41,7 @@
         push("/");
         break;
       default:
-        incompleteMatchCase(e.type, "Incomplete match case:AppRouteEvent");
+        incompleteMatchCase(e, "Incomplete match case:AppRouteEvent");
     }
   }
 

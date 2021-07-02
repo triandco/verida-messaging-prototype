@@ -2,7 +2,7 @@
   import { wrap } from "svelte-spa-router/wrap";
   import NotFound from "./NotFound.svelte";
   import Auth from "./Auth.svelte";
-  import Dashboard from "./MatterDashboard.svelte";
+  import MatterDashboard from "./MatterDashboard.svelte";
   import Router, { push, replace } from "svelte-spa-router";
   import type { AppRouteEvent } from "./Type";
   import { incompleteMatchCase } from "./Common";
@@ -16,7 +16,7 @@
   
   const routes = {
     "/": wrap({
-      component: Dashboard,
+      component: MatterDashboard,
       props: {
         did: did,
       },
@@ -41,7 +41,7 @@
         push("/");
         break;
       default:
-        incompleteMatchCase(e, "Incomplete match case:AppRouteEvent");
+        incompleteMatchCase(e.type, "Incomplete match case:AppRouteEvent");
     }
   }
 

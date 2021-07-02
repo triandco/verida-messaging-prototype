@@ -1,13 +1,12 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
-
-  import type { Matter, FileType, MatterDeleted } from "./Type";
+  import DocumentationView from "./DocumentationView.svelte";
+  import type { Matter, MatterDeleted } from "./Type";
 
   export let matter: Matter;
+  export let encryptionKey: string;
   let isContextMenuVisible: boolean = false;
-  function getIcon(type: FileType): string {
-    return `images/icon-${type}.png`;
-  }
+  
   type MatterDeletedEvent = { MatterDeleted: MatterDeleted };
   const dispatchDeletion = createEventDispatcher<MatterDeletedEvent>();
   const deleteMatter = () =>
@@ -19,14 +18,19 @@
       : null;
   const moreButtonClicked = () =>
     (isContextMenuVisible = !isContextMenuVisible);
-  const requestDocumentationClicked = () => alert("click");
+  
+  
 </script>
 
-<section class="flex-1 p-4 md:p-6 lg:p-8">
+<section class="flex-1 p-4 md:p-6 lg:p-8 relative overflow-hidden">
   <header class="mb-8 flex justify-between w-full">
     <div>
-      <span class="text-ml font-bold uppercase">Matter</span>
-      <h1 class="font-serif text-4xl font-semibold">{matter.title}</h1>
+      <span class="text-ml font-bold uppercase">Matter</span><br />
+      <input
+        type="text"
+        bind:value={matter.title}
+        class="font-serif text-4xl font-semibold"
+      />
     </div>
     <div>
       <button class="button icon" on:click={moreButtonClicked}>
@@ -50,12 +54,12 @@
           class="rounded bg-white shadow-lg absolute z-10 flex flex-col border w-40 right-4"
         >
           <button
-            class="py-2 px-4 text-red-500 text-left"
+            class="py-2 px-4 text-red-500 text-left flex items-center"
             on:click={deleteMatter}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              class="h-4 w-4 inline-block align-top"
+              class="h-4 w-4 mr-2"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -73,31 +77,6 @@
       {/if}
     </div>
   </header>
-
-  <section>
-    <h2 class="text-ml font-bold uppercase border-b pb-2">Documentation</h2>
-    {#if matter.documentation.length == 0}
-      <img src="images/character-decoration.jpg" alt="Request dodcument" class="h-96 block mx-auto"/>
-      <p class="mt-16 mb-8 text-center">
-        No documentation available. <br />
-        Request some from your client.
-      </p>
-      <button
-        class="mx-auto button block"
-        on:click={requestDocumentationClicked}>Request documentation</button
-      >
-    {:else}
-      <ul>
-        {#each matter.documentation as documentation}
-          <li>
-            <img
-              src={getIcon(documentation.fileType)}
-              alt={documentation.fileType}
-            />
-            <span>{documentation.title}</span>
-          </li>
-        {/each}
-      </ul>
-    {/if}
-  </section>
+  
+  <DocumentationView encryptionKey={encryptionKey}/>
 </section>

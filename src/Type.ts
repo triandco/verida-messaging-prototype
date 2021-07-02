@@ -3,13 +3,31 @@ import { incompleteMatchCase } from "./Common";
 export type UserAuthenticated = { did: string, type: "UserAuthenticated" };
 export type MatterCreated = { matter: Matter, type: "MatterCreated"};
 export type MatterDeleted = { matter: Matter, type: "MatterDeleted"};
+export type RequestDocumentationCancelled = { type: "RequestDocumentationCancelled"};
 
 export type AppRouteEvent = UserAuthenticated;
 
-export type FileType = "doc"|"pdf"|"jpg"|"png";
+export type FileType = "application/msword" | "application/vnd.openxmlformats-officedocument.wordprocessingml.document" | "application/pdf" | "image/png" | "image/jpeg";
+export function parseFileType(x:string): FileType | null{
+  if(x === "application/msword"){ return x; }
+  if(x === "application/vnd.openxmlformats-officedocument.wordprocessingml.document"){ return x; }
+  if(x === "application/pdf"){ return x; }
+  if(x === "image/png"){ return x; }
+  if(x === "image/jpeg"){ return x; }
+  return null;
+}
+export function toCommonFileName(x:FileType):string{
+  switch(x){
+    case "application/msword": return "doc";
+    case "application/pdf": return "pdf";
+    case "application/vnd.openxmlformats-officedocument.wordprocessingml.document": return "doc";
+    case "image/png": return "png";
+    case "image/jpeg": return "jpg";
+    default: incompleteMatchCase(x, "commonFileNameMap incomplete match");
+  }
+}
 export type Documentation = { id: string; fileType: FileType, title: string};
 export type Matter = {id: string; title:string; documentation: Documentation[] };
-
 
 /// async type
 

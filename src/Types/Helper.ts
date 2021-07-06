@@ -1,13 +1,7 @@
-import { incompleteMatchCase } from "./Common";
+import { incompleteMatchCase } from "../Common";
+import type { Remote, RemoteFailure, RemoteInitial, RemotePending, RemoteSuccess } from "./FunctionalType";
+import type { FileType } from "./Type";
 
-export type UserAuthenticated = { did: string, type: "UserAuthenticated" };
-export type MatterCreated = { matter: Matter, type: "MatterCreated"};
-export type MatterDeleted = { matter: Matter, type: "MatterDeleted"};
-export type RequestDocumentationCancelled = { type: "RequestDocumentationCancelled"};
-
-export type AppRouteEvent = UserAuthenticated;
-
-export type FileType = "application/msword" | "application/vnd.openxmlformats-officedocument.wordprocessingml.document" | "application/pdf" | "image/png" | "image/jpeg";
 export function parseFileType(x:string): FileType | null{
   if(x === "application/msword"){ return x; }
   if(x === "application/vnd.openxmlformats-officedocument.wordprocessingml.document"){ return x; }
@@ -26,16 +20,6 @@ export function toCommonFileName(x:FileType):string{
     default: incompleteMatchCase(x, "commonFileNameMap incomplete match");
   }
 }
-export type Documentation = { id: string; fileType: FileType, title: string};
-export type Matter = {id: string; title:string; documentation: Documentation[] };
-
-/// async type
-
-export type RemoteSuccess<T> = { _tag: "success", value: T };
-export type RemoteFailure<T> = { _tag: "failure", error: T };
-export type RemotePending = { _tag: "pending", };
-export type RemoteInitial = { _tag: "initial" };
-export type Remote<S,E> =  RemoteSuccess<S> | RemoteFailure<E> | RemotePending | RemoteInitial;
 
 export const initial:RemoteInitial = { _tag: "initial"};
 export const pending:RemotePending = { _tag: "pending"};
@@ -68,3 +52,6 @@ export const match = <S,E,T>(r:Remote<S,E>, s:(s:S)=>T, f:(e:E)=>T,i:()=>T,p:()=
   }
   return t;
 };
+
+export const mapRemoteSuccess = <S1,S2,E>(remote:Remote<S1,E>, f:(s1:S1)=>S2): Remote<S2,E> =>
+  isSuccess(remote) ? success(f(remote.value)): remote;

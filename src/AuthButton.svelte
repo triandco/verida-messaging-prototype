@@ -2,7 +2,7 @@
   import Verida from "@verida/datastore";
   import {isMetaMaskAvailable, getMetamaskExtensionLink} from "./WalletSupport";
   import { createEventDispatcher } from "svelte";
-  import type { UserAuthenticated } from "./Type";
+  import type { UserAuthenticated } from "./Types/Type";
   
   type AuthProvider = "ethr" | "near";
   type UserAuthenticatedEvent = { "UserAuthenticated": UserAuthenticated };

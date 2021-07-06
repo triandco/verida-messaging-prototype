@@ -1,11 +1,6 @@
-<script lang="ts" context="module">
-  export type FileAdded = {
-    files: FileList
-  };
-</script>
-
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
+  import type { FileAdded } from "./Types/Type";
 
   type FileAddedEvent = { FileAdded: FileAdded };
   const dispatchFileAdded = createEventDispatcher<FileAddedEvent>();

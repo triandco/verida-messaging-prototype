@@ -17,3 +17,11 @@
 .bg-glass{
   @apply backdrop-blur-xl backdrop-filter bg-white bg-opacity-90;
 }
+
+@variants responsive{
+  .bg-dotted{
+    background-image: radial-gradient(circle, #ddd 1%, transparent 10%), radial-gradient(circle, #ddd 1%, transparent 10%);
+    background-size: 22px 22px;
+    background-position: 0 0, 22px 22px;
+  }
+}

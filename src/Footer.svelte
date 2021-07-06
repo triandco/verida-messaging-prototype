@@ -1,6 +1,7 @@
 <script lang="ts"></script>
-<a href="https://onpoint-compliance.com/privacy-policy">
+<a target="_blank" href="https://onpoint-compliance.com/privacy-policy">
   <svg
+    aria-label="Privacy policy"
     xmlns="http://www.w3.org/2000/svg"
     class="h-6 w-6"
     fill="none"
@@ -15,8 +16,9 @@
     />
   </svg>
 </a>
-<a class="ml-2" href="https://onpoint-compliance.com">
+<a target="_blank" class="ml-2" href="https://onpoint-compliance.com">
   <svg
+    aria-label="Desca is powered by OnPoint"
     xmlns="http://www.w3.org/2000/svg"
     xmlns:xlink="http://www.w3.org/1999/xlink"
     class="h-6 w-6"
@@ -30,8 +32,9 @@
     />
   </svg>
 </a>
-<a class="ml-auto" href="https://desca.com/privacy-policy">
+<a target="_blank" class="ml-auto" href="mailto:support@onpoint-compliance.com">
   <svg
+    aria-label="Support"
     xmlns="http://www.w3.org/2000/svg"
     class="h-6 w-6"
     fill="none"

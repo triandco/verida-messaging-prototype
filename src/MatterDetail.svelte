@@ -1,11 +1,12 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
-  import DocumentationView from "./DocumentationView.svelte";
-  import type { Matter, MatterDeleted } from "./Type";
-
+  import DocumentationList from "./DocumentationList.svelte";
+  import type { Matter, MatterDeleted } from "./Types/Type";
+  import {fly} from "svelte/transition";
   export let matter: Matter;
   export let encryptionKey: string;
   let isContextMenuVisible: boolean = false;
+  let contextMenu: HTMLElement;
   
   type MatterDeletedEvent = { MatterDeleted: MatterDeleted };
   const dispatchDeletion = createEventDispatcher<MatterDeletedEvent>();
@@ -16,23 +17,27 @@
           type: "MatterDeleted",
         })
       : null;
-  const moreButtonClicked = () =>
-    (isContextMenuVisible = !isContextMenuVisible);
-  
+  function moreButtonClicked(){
+    isContextMenuVisible = !isContextMenuVisible;
+    if(isContextMenuVisible){
+      window.setTimeout(()=>{
+        const firstButton:HTMLElement = contextMenu.querySelector("#matterContextMenu button");
+        if(firstButton){firstButton.focus();}
+      },200);
+    }
+  }
+  function contextMenuBlurred(){
+    const focusItem = Array.from(contextMenu.querySelectorAll("#matterContextMenu button")).find(x => x == document.activeElement);
+    if(focusItem === undefined){isContextMenuVisible=false;}
+  }
   
 </script>
 
-<section class="flex-1 p-4 md:p-6 lg:p-8 relative overflow-hidden">
-  <header class="mb-8 flex justify-between w-full">
-    <div>
-      <span class="text-ml font-bold uppercase">Matter</span><br />
-      <input
-        type="text"
-        bind:value={matter.title}
-        class="font-serif text-4xl font-semibold"
-      />
-    </div>
-    <div>
+<section class="flex-1 relative overflow-hidden flex flex-col">
+  <header class="flex border-b mb-4">
+    <slot name="LeftButton"></slot>
+    <h1 class="font-serif font-semibold text-xl py-4 md:ml-6 lg:ml-8">{matter.title}</h1>
+    <div bind:this={contextMenu} class="flex ml-auto">
       <button class="button icon" on:click={moreButtonClicked}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -51,10 +56,13 @@
       </button>
       {#if isContextMenuVisible}
         <div
-          class="rounded bg-white shadow-lg absolute z-10 flex flex-col border w-40 right-4"
+          id="matterContextMenu"
+          class="rounded bg-white shadow-lg absolute z-10 flex flex-col border w-40 right-4 top-16"
+          transition:fly={{y:-10}}
         >
           <button
             class="py-2 px-4 text-red-500 text-left flex items-center"
+            on:blur={contextMenuBlurred}
             on:click={deleteMatter}
           >
             <svg
@@ -77,6 +85,7 @@
       {/if}
     </div>
   </header>
-  
-  <DocumentationView encryptionKey={encryptionKey}/>
+  <div class="flex-1 flex flex-col">
+    <DocumentationList encryptionKey={encryptionKey}/>
+  </div>
 </section>

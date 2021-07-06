@@ -1,6 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
-  import type { MatterCreated } from "./Type";
+  import type { MatterCreated } from "./Types/Type";
   import { v4 as uuid } from "uuid";
   import Footer from "./Footer.svelte";
 

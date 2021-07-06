@@ -2,7 +2,7 @@
 import { createEventDispatcher } from "svelte/internal";
 
   import AuthButton from "./AuthButton.svelte";
-  import type { UserAuthenticated } from "./Type";
+  import type { UserAuthenticated } from "./Types/Type";
 
   export let applicationName: string;
   export let version: string;

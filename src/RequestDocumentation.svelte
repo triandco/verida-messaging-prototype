@@ -1,26 +1,38 @@
 <script lang="ts">
   import { createEventDispatcher, onMount } from "svelte";
-  import { fly, fade } from "svelte/transition";
+  import type { Remote } from "./Types/FunctionalType";
   import {
     match,
     pending,
-    Remote,
-    RequestDocumentationCancelled,
-  } from "./Type";
-  import { initial, success } from "./Type";
+    initial,
+    success,
+    isSuccess,
+    isFailure,
+  } from "./Types/Helper";
+  import type { RequestDocumentationCancelled } from "./Types/Type";
 
   type SecurityCode = { code: string; expiration: Date };
   type RequestDocumentationCancelledEvent = {
     RequestDocumentationCancelled: RequestDocumentationCancelled;
   };
-  let emailAddress: string;
   let securityCode: Remote<SecurityCode, Error> = initial;
   let isViewingSecurityDetail = false;
+  let invitationContainer: HTMLElement;
+  let invitationLink: Remote<string, Error> = initial;
 
   const dispatch = createEventDispatcher<RequestDocumentationCancelledEvent>();
-  function formSubmitted() {
-    console.log("send email");
+  function okButtonClicked() {
+    dispatch("RequestDocumentationCancelled", {
+      type: "RequestDocumentationCancelled",
+    });
   }
+  async function getInvitationLink() {
+    invitationLink = pending;
+    window.setTimeout(() => {
+      invitationLink = success("https://desca.app/somethingsomethingdarksie");
+    }, 1000);
+  }
+
   async function getSecurityCode() {
     securityCode = pending;
     window.setTimeout(() => {
@@ -31,11 +43,7 @@
     isViewingSecurityDetail = true;
   }
   function chevronClicked() {
-    if (isViewingSecurityDetail) {
-      isViewingSecurityDetail = false;
-    } else {
-      dispatch("RequestDocumentationCancelled", {type:"RequestDocumentationCancelled"});
-    }
+    isViewingSecurityDetail = false;
   }
   function resetSecurityCodeClicked() {
     getSecurityCode();
@@ -49,62 +57,89 @@
       () => "Generating..."
     );
   }
-  onMount(getSecurityCode);
+  function copyButtonClicked() {
+    window.getSelection().removeAllRanges();
+    let range = document.createRange();
+    range.selectNode(invitationContainer);
+    window.getSelection().addRange(range);
+    document.execCommand("copy");
+    window.getSelection().removeAllRanges();
+  }
+  onMount(() => {
+    getSecurityCode();
+    getInvitationLink();
+  });
 </script>
 
 <section>
-  <nav class="border-b">
-    <button class="p-2" on:click={chevronClicked}>
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        class="h-6 w-6"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M15 19l-7-7 7-7"
+  {#if !isViewingSecurityDetail}
+    <div class="flex flex-col inset-0 w-full h-full z-0">
+      <header class="p-4">
+        <h3 class="font-semibold text-xl">Request documentation</h3>
+        <p class="mt-2">
+          Send a request documentation from your client. The documentation they
+          uploaded will be encrypted can only be accessed by you.
+        </p>
+      </header>
+
+      {#if isSuccess(invitationLink)}
+        <div class="border rounded flex flex-col mx-4">
+          <div class="items-center p-4" bind:this={invitationContainer}>
+            <p>Hello there,</p>
+            <p class="my-2">
+              You are requested to share the documentation for a matter. Please
+              follow this link to upload your documentation.
+            </p>
+            <a class="my-4 block" href="https://desca.com"
+              ><strong>desca.com/somerandomlongtextstring</strong></a
+            >
+            <p>Thank you,</p>
+          </div>
+          <button
+            class="text-right border-t font-font-semibold p-3"
+            on:click={copyButtonClicked}>Copy</button
+          >
+        </div>
+      {:else if isFailure(invitationLink)}
+        <p>Unable to get invitation code please try again later</p>
+      {:else}
+        <div
+          aria-label="Generating invitation. Please wait"
+          class="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-900 mx-auto block"
         />
-      </svg>
-    </button>
-  </nav>
-  <section class="relative">
-    {#if !isViewingSecurityDetail}
-      <div
-        class="absolute flex flex-col inset-0 w-full h-full bg-white z-0"
-        transition:fade
+      {/if}
+
+      <button
+        on:click={securityCodeClicked}
+        class="border-b border-t m-4 py-4 flex"
       >
-        <header class="p-4" transition:fly>
-          <h3 class="font-serif text-2xl">Request documentation</h3>
-          <p>
-            Send a request documentation from your client. The documentation
-            they uploaded will be encrypted can only be accessed by you.
-          </p>
-        </header>
-
-        <form
-          on:submit|preventDefault={formSubmitted}
-          class="border-t border-b p-4 flex content-between"
+        <strong>Security code</strong>
+        <span class="ml-4 flex-1 text-right">
+          {getDisplayString(securityCode)}
+        </span>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-6 w-6 ml-2"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
         >
-          <label for="email">Email</label>
-          <input
-            class="ml-4 flex-1 text-left"
-            id="email"
-            bind:value={emailAddress}
-            type="email"
-            required
-            placeholder="Email address"
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M9 5l7 7-7 7"
           />
-        </form>
+        </svg>
+      </button>
 
-        <button on:click={securityCodeClicked} class="border-b p-4 flex">
-          <strong>Security code</strong>
-          <span class="ml-4 flex-1 text-right">
-            {getDisplayString(securityCode)}
-          </span>
+      <button class="md:hidden button m-4" on:click={okButtonClicked}>Ok</button
+      >
+    </div>
+  {:else}
+    <div class="z-10 inset-0 w-full h-full">
+      <nav class="border-b">
+        <button class="p-2" on:click={chevronClicked}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             class="h-6 w-6"
@@ -116,20 +151,12 @@
               stroke-linecap="round"
               stroke-linejoin="round"
               stroke-width="2"
-              d="M9 5l7 7-7 7"
+              d="M15 19l-7-7 7-7"
             />
           </svg>
         </button>
-
-        <button class="button m-4" type="submit" on:click={formSubmitted}
-          >Send</button
-        >
-      </div>
-    {:else}
-      <div
-        class="absolute bg-white z-10 inset-0 w-full h-full p-4"
-        transition:fly={{duration:200, x:100}}
-      >
+      </nav>
+      <section class="p-4">
         <h4 class="font-serif text-2xl">Security code</h4>
         <p>
           Each documentation request is created with a unique security code that
@@ -150,7 +177,7 @@
           authenticity of the documentation request before they upload their
           documentation.
         </p>
-      </div>
-    {/if}
-  </section>
+      </section>
+    </div>
+  {/if}
 </section>

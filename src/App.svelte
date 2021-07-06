@@ -4,23 +4,20 @@
   import Auth from "./Auth.svelte";
   import MatterDashboard from "./MatterDashboard.svelte";
   import Router, { push, replace } from "svelte-spa-router";
-  import type { AppRouteEvent } from "./Type";
+  import type { AppRouteEvent } from "./Types/Type";
   import { incompleteMatchCase } from "./Common";
-  import { getApplicationData, saveApplicationData, setApplicationVersion } from "./SimplePersistence";
-  import MatterCreation from "./MatterCreation.svelte";
+  import { deleteApplicationData, getApplicationData, saveApplicationData, setApplicationVersion } from "./SimplePersistence";
 
   export let applicationName: string;
   export let version: string;
   setApplicationVersion(version);
   let did: string = getApplicationData("Did");
+  $: isLoggedIn = did!==null && did!==undefined;
   
   const routes = {
     "/": wrap({
       component: MatterDashboard,
-      props: {
-        did: did,
-      },
-      conditions: [(_) => did !== null && did !== undefined],
+      conditions: ()=>isLoggedIn,
     }),
     
     "/auth": wrap({
@@ -40,8 +37,13 @@
         saveApplicationData("Did", did);
         push("/");
         break;
+      case "UserLoggedOut":
+        did = null;
+        deleteApplicationData();
+        push("/auth");
+        break;
       default:
-        incompleteMatchCase(e.type, "Incomplete match case:AppRouteEvent");
+        incompleteMatchCase(e, "Incomplete match case:AppRouteEvent");
     }
   }
 
